@@ -7,7 +7,7 @@ public class PlayerCameraRotation : MonoBehaviour
     [SerializeField] private Camera playerCamera;
     [SerializeField] private float maxAngleY = 90f;
     [SerializeField] private float smoothTime = 0.05f;
-    public Camera PlayerCamera { get; private set; }
+    public Camera PlayerCamera => playerCamera;
 
     private Vector2 cameraRotation;
     private Vector2 currentInput;
@@ -25,8 +25,6 @@ public class PlayerCameraRotation : MonoBehaviour
         inputManager = ServiceLocator.Get<IInputManager>();
         settingsManager = ServiceLocator.Get<ISettingsManager>();
         inputState = ServiceLocator.Get<IInputState>();
-
-        PlayerCamera = playerCamera;
 
         if (inputState != null)
             inputState.AddLock(InputState.LockType.Cursor, "InitPlayer");
@@ -60,6 +58,8 @@ public class PlayerCameraRotation : MonoBehaviour
         if (cameraLocked) { return; }
 
         currentInput = inputManager.GetInput<Vector2>("LookInput") * cameraSensitivity;
+
+        Debug.Log(currentInput);
 
         smoothedInput.x = Mathf.SmoothDamp(smoothedInput.x, currentInput.x, ref inputVelocity.x, smoothTime);
         smoothedInput.y = Mathf.SmoothDamp(smoothedInput.y, currentInput.y, ref inputVelocity.y, smoothTime);
