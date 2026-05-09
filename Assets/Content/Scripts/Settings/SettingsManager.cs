@@ -1,9 +1,10 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
-public class SettingsManager : MonoBehaviour, ISettingsManager
+public class SettingsManager : MonoBehaviour, ISettingsManager, IAsyncInitializable
 {
     private static readonly string[] LanguageOptions = { "English", "Russian", "Spain" };
     private static readonly string[] ScreenModeOptions = { "Fullscreen", "Windowed", "Borderless" };
@@ -64,6 +65,8 @@ public class SettingsManager : MonoBehaviour, ISettingsManager
 
     private FMOD.System _coreSystem;
 
+    private bool isLoaded;
+
     private void Awake()
     {
         _coreSystem = FMODUnity.RuntimeManager.CoreSystem;
@@ -74,6 +77,13 @@ public class SettingsManager : MonoBehaviour, ISettingsManager
         InitParameters();
         LoadSettings();
         ApplyAllSettings();
+
+        isLoaded = true;
+    }
+
+    public IEnumerator InitializeAsync()
+    {
+        yield return new WaitUntil(() => isLoaded);
     }
 
     private void InitParameters()

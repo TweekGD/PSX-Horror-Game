@@ -1,8 +1,9 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class InputState : MonoBehaviour, IInputState
+public class InputState : MonoBehaviour, IInputState, IAsyncInitializable
 {
     [Serializable]
     private class LockEntry
@@ -16,6 +17,18 @@ public class InputState : MonoBehaviour, IInputState
 
     private readonly Dictionary<LockType, HashSet<string>> _locks = new();
     public enum LockType { Move, Camera, Cursor, Menu }
+
+    private bool isLoaded;
+
+    private void Awake()
+    {
+        isLoaded = true;
+    }
+
+    public IEnumerator InitializeAsync()
+    {
+        yield return new WaitUntil(() => isLoaded);
+    }
 
     public bool GetLockState(LockType type)
     {

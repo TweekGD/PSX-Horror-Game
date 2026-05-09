@@ -1,9 +1,15 @@
 using FMODUnity;
 using System;
+using System.Collections;
 using UnityEngine;
 using static InputState;
 
 public interface IGameService { }
+
+public interface IAsyncInitializable
+{
+    public IEnumerator InitializeAsync();
+}
 
 public interface IAudioManager : IGameService
 {

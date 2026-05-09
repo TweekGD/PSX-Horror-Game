@@ -1,9 +1,10 @@
 using FMOD.Studio;
 using FMODUnity;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AudioManager : MonoBehaviour, IAudioManager
+public class AudioManager : MonoBehaviour, IAudioManager, IAsyncInitializable
 {
     [SerializeField] private float masterVolume = 1f;
     [SerializeField] private float musicVolume = 1f;
@@ -22,6 +23,8 @@ public class AudioManager : MonoBehaviour, IAudioManager
     public EventInstance musicEventInstance;
 
     private ISettingsManager settingsManager;
+
+    private bool isLoaded;
     private void Awake()
     {
         eventInstances = new List<EventInstance>();
@@ -31,6 +34,13 @@ public class AudioManager : MonoBehaviour, IAudioManager
         SFXBus = RuntimeManager.GetBus("bus:/SFX");
         musicBus = RuntimeManager.GetBus("bus:/Music");
         UIBus = RuntimeManager.GetBus("bus:/UI");
+
+        isLoaded = true;
+    }
+
+    public IEnumerator InitializeAsync()
+    {
+        yield return new WaitUntil(() => isLoaded);
 
         settingsManager = ServiceLocator.Get<ISettingsManager>();
 

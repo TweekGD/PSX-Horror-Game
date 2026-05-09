@@ -43,7 +43,7 @@ public class PlayerCameraRotation : MonoBehaviour
         => CameraRotation();
 
     private void ChangeSensitivityValue() 
-        => cameraSensitivity = settingsManager.GetParametersValue<float>("Sensitivity");
+        => cameraSensitivity = settingsManager != null ? settingsManager.GetParametersValue<float>("Sensitivity") : 1f;
 
     private void CameraRotation()
     {
@@ -58,8 +58,6 @@ public class PlayerCameraRotation : MonoBehaviour
         if (cameraLocked) { return; }
 
         currentInput = inputManager.GetInput<Vector2>("LookInput") * cameraSensitivity;
-
-        Debug.Log(currentInput);
 
         smoothedInput.x = Mathf.SmoothDamp(smoothedInput.x, currentInput.x, ref inputVelocity.x, smoothTime);
         smoothedInput.y = Mathf.SmoothDamp(smoothedInput.y, currentInput.y, ref inputVelocity.y, smoothTime);

@@ -1,9 +1,10 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class InputManager : MonoBehaviour, IInputManager
+public class InputManager : MonoBehaviour, IInputManager, IAsyncInitializable
 {
     public InputActionAsset playerControls;
 
@@ -33,12 +34,21 @@ public class InputManager : MonoBehaviour, IInputManager
 
     private Dictionary<string, Func<object>> _inputLookup;
 
+    private bool isLoaded;
+
     private void Awake()
     {
         InitActions();
         EnableActions();
         RegisterPlayerInputActions();
         BuildLookup();
+
+        isLoaded = true;
+    }
+
+    public IEnumerator InitializeAsync()
+    {
+        yield return new WaitUntil(() => isLoaded);
     }
 
     private void OnDestroy()
