@@ -102,6 +102,7 @@ public class SettingsManager : MonoBehaviour, ISettingsManager, IAsyncInitializa
         _vSync = new SettingsParameter<int>("VSync", 0, v => Mathf.Clamp(v, 0, 1), v => QualitySettings.vSyncCount = v);
 
         BuildParameterRegistry();
+        BuildLookup();
         SubscribeAll();
     }
 
@@ -250,7 +251,7 @@ public class SettingsManager : MonoBehaviour, ISettingsManager, IAsyncInitializa
     }
 
     private Dictionary<string, object> _parameterRegistry;
-    private Dictionary<string, object> _parameterLookup;
+    private Dictionary<string, Func<object>> _parameterLookup;
 
     private void BuildParameterRegistry()
     {
@@ -271,18 +272,18 @@ public class SettingsManager : MonoBehaviour, ISettingsManager, IAsyncInitializa
 
     private void BuildLookup()
     {
-        _parameterLookup = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
+        _parameterLookup = new Dictionary<string, Func<object>>(StringComparer.OrdinalIgnoreCase)
         {
-            { _language.Name,          (Func<object>) (() => _language.Current)       },
-            { _sensitivity.Name,       (Func<object>) (() => _sensitivity.Value)      },
-            { _masterVolume.Name,      (Func<object>) (() => _masterVolume.Value)     },
-            { _musicVolume.Name,       (Func<object>) (() => _musicVolume.Value)      },
-            { _sfxVolume.Name,         (Func<object>) (() => _sfxVolume.Value)        },
-            { _uiVolume.Name,          (Func<object>) (() => _uiVolume.Value)         },
-            { _screenResolution.Name,  (Func<object>) (() => _screenResolution.Current)},
-            { _screenMode.Name,        (Func<object>) (() => _screenMode.Current)     },
-            { _fpsStepIndex.Name,      (Func<object>) (() => (object)FpsLimit)        },
-            { _vSync.Name,             (Func<object>) (() => _vSync.Value)            },
+            { _language.Name,          () => _language.Current          },
+            { _sensitivity.Name,       () => _sensitivity.Value         },
+            { _masterVolume.Name,      () => _masterVolume.Value        },
+            { _musicVolume.Name,       () => _musicVolume.Value         },
+            { _sfxVolume.Name,         () => _sfxVolume.Value           },
+            { _uiVolume.Name,          () => _uiVolume.Value            },
+            { _screenResolution.Name,  () => _screenResolution.Current  },
+            { _screenMode.Name,        () => _screenMode.Current        },
+            { _fpsStepIndex.Name,      () => (object)FpsLimit           },
+            { _vSync.Name,             () => _vSync.Value               },
         };
     }
 
@@ -347,9 +348,14 @@ public class SettingsManager : MonoBehaviour, ISettingsManager, IAsyncInitializa
         if (_parameterRegistry == null) BuildParameterRegistry();
         return _parameterRegistry.TryGetValue(name, out object param) ? param as T : null;
     }
+
     public T GetParametersValue<T>(string name)
     {
         if (_parameterLookup == null) BuildLookup();
-        return _parameterLookup.TryGetValue(name, out object param) && param is T val ? val : default;
+        if (!_parameterLookup.TryGetValue(name, out Func<object> getter)) return default;
+        object result = getter();
+        if (result is T value) return value;
+        try { return (T)Convert.ChangeType(result, typeof(T)); }
+        catch { return default; }
     }
 }

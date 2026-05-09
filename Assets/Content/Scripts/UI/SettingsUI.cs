@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class SettingsUI : MonoBehaviour
@@ -31,12 +32,11 @@ public class SettingsUI : MonoBehaviour
     [SerializeField] private ArrowControl vSync;
     [SerializeField] private Button resetButton;
 
-    private SettingsManager settingsManager;
-    private bool isInitializing;
+    private ISettingsManager settingsManager;
 
     private void Start()
     {
-        settingsManager = ServiceLocator.Get<ISettingsManager>() as SettingsManager;
+        settingsManager = ServiceLocator.Get<ISettingsManager>();
 
         if (settingsManager == null)
         {
@@ -96,17 +96,19 @@ public class SettingsUI : MonoBehaviour
 
         if (screenResolutionDropdown)
         {
+            var resParam = settingsManager.GetParameter<IndexedParameter>("ScreenResolution");
             screenResolutionDropdown.ClearOptions();
-            foreach (Resolution res in settingsManager.FilteredResolutions)
-                screenResolutionDropdown.options.Add(new TMP_Dropdown.OptionData(res.width + "x" + res.height));
+            for (int i = 0; i < resParam.Count; i++)
+                screenResolutionDropdown.options.Add(new TMP_Dropdown.OptionData(resParam.Options[i]));
             screenResolutionDropdown.RefreshShownValue();
         }
 
         if (screenModeDropdown)
         {
+            var modeParam = settingsManager.GetParameter<IndexedParameter>("ScreenMode");
             screenModeDropdown.ClearOptions();
-            for (int i = 0; i < settingsManager.ScreenModeCount; i++)
-                screenModeDropdown.options.Add(new TMP_Dropdown.OptionData(GetScreenModeLabel(i)));
+            for (int i = 0; i < modeParam.Count; i++)
+                screenModeDropdown.options.Add(new TMP_Dropdown.OptionData(modeParam.Options[i]));
             screenModeDropdown.RefreshShownValue();
         }
     }
@@ -114,20 +116,12 @@ public class SettingsUI : MonoBehaviour
     private void RebuildLanguageOptions()
     {
         if (!languageDropdown) return;
+        var langParam = settingsManager.GetParameter<IndexedParameter>("Language");
         languageDropdown.ClearOptions();
-        string[] labels = { "English", "Russian", "Spain" };
-        for (int i = 0; i < settingsManager.LanguageCount; i++)
-            languageDropdown.options.Add(new TMP_Dropdown.OptionData(i < labels.Length ? labels[i] : i.ToString()));
+        for (int i = 0; i < langParam.Count; i++)
+            languageDropdown.options.Add(new TMP_Dropdown.OptionData(langParam.Options[i]));
         languageDropdown.RefreshShownValue();
     }
-
-    private string GetScreenModeLabel(int index) => index switch
-    {
-        0 => "Fullscreen",
-        1 => "Windowed",
-        2 => "Borderless",
-        _ => index.ToString()
-    };
 
     private void InitSliders()
     {
@@ -136,7 +130,7 @@ public class SettingsUI : MonoBehaviour
         SetupSlider(musicVolume.slider, 0f, 2f, false);
         SetupSlider(sfxVolume.slider, 0f, 2f, false);
         SetupSlider(uiVolume.slider, 0f, 2f, false);
-        SetupSlider(fpsLimit.slider, 0f, settingsManager.FpsStepsCount - 1, true);
+        SetupSlider(fpsLimit.slider, 0f, 480, true);
     }
 
     private void SetupSlider(Slider slider, float min, float max, bool wholeNumbers)
@@ -182,8 +176,8 @@ public class SettingsUI : MonoBehaviour
 
     private void BindArrows()
     {
-        BindArrow(vSync.leftButton, () => settingsManager.StepVSync(-1));
-        BindArrow(vSync.rightButton, () => settingsManager.StepVSync(1));
+        BindArrow(vSync.leftButton, () => settingsManager.GetParameter<SettingsParameter<int>>("VSync").Set((settingsManager.GetParameter<SettingsParameter<int>>("VSync").Value - 1 + 2) % 2));
+        BindArrow(vSync.rightButton, () => settingsManager.GetParameter<SettingsParameter<int>>("VSync").Set((settingsManager.GetParameter<SettingsParameter<int>>("VSync").Value + 1 + 2) % 2));
     }
 
     private static void BindArrow(Button btn, System.Action action)
@@ -193,61 +187,61 @@ public class SettingsUI : MonoBehaviour
 
     private void OnLanguageDropdownChanged(int index)
     {
-        if (isInitializing) return;
-        settingsManager.SetLanguageFromDropdown(index);
+        settingsManager.GetParameter<IndexedParameter>("Language").Set(index);
     }
 
     private void OnScreenResolutionDropdownChanged(int index)
     {
-        if (isInitializing) return;
-        settingsManager.SetScreenResolutionFromDropdown(index);
+        settingsManager.GetParameter<IndexedParameter>("ScreenResolution").Set(index);
     }
 
     private void OnScreenModeDropdownChanged(int index)
     {
-        if (isInitializing) return;
-        settingsManager.SetScreenModeFromDropdown(index);
+        settingsManager.GetParameter<IndexedParameter>("ScreenMode").Set(index);
     }
 
     private void OnSensitivitySliderChanged(float value)
     {
-        if (isInitializing) return;
-        settingsManager.SetSensitivityFromSlider(value);
+        settingsManager.GetParameter<SettingsParameter<float>>("Sensitivity").Set(value);
     }
 
     private void OnMasterVolumeSliderChanged(float value)
     {
-        if (isInitializing) return;
-        settingsManager.SetMasterVolumeFromSlider(value);
+        settingsManager.GetParameter<SettingsParameter<float>>("MasterVolume").Set(value);
     }
 
     private void OnMusicVolumeSliderChanged(float value)
     {
-        if (isInitializing) return;
-        settingsManager.SetMusicVolumeFromSlider(value);
+        settingsManager.GetParameter<SettingsParameter<float>>("MusicVolume").Set(value);
     }
 
     private void OnSFXVolumeSliderChanged(float value)
     {
-        if (isInitializing) return;
-        settingsManager.SetSFXVolumeFromSlider(value);
+        settingsManager.GetParameter<SettingsParameter<float>>("SFXVolume").Set(value);
     }
 
     private void OnUIVolumeSliderChanged(float value)
     {
-        if (isInitializing) return;
-        settingsManager.SetUIVolumeFromSlider(value);
+        settingsManager.GetParameter<SettingsParameter<float>>("UIVolume").Set(value);
     }
 
     private void OnFpsLimitSliderChanged(float value)
     {
-        if (isInitializing) return;
-        settingsManager.SetFpsLimitFromSlider(value);
+        settingsManager.GetParameter<SettingsParameter<int>>("FpsStepIndex").Set(Mathf.RoundToInt(value));
     }
 
     private void OnReset()
     {
-        settingsManager.ResetToDefaults();
+        settingsManager.GetParameter<IndexedParameter>("Language").Reset();
+        settingsManager.GetParameter<SettingsParameter<float>>("Sensitivity").Reset();
+        settingsManager.GetParameter<SettingsParameter<float>>("MasterVolume").Reset();
+        settingsManager.GetParameter<SettingsParameter<float>>("MusicVolume").Reset();
+        settingsManager.GetParameter<SettingsParameter<float>>("SFXVolume").Reset();
+        settingsManager.GetParameter<SettingsParameter<float>>("UIVolume").Reset();
+        settingsManager.GetParameter<IndexedParameter>("ScreenResolution").Reset();
+        settingsManager.GetParameter<IndexedParameter>("ScreenMode").Reset();
+        settingsManager.GetParameter<SettingsParameter<int>>("FpsStepIndex").Reset();
+        settingsManager.GetParameter<SettingsParameter<int>>("VSync").Reset();
     }
 
     private void RefreshAll()
@@ -264,21 +258,21 @@ public class SettingsUI : MonoBehaviour
         RefreshVSync();
     }
 
-    private void RefreshDropdown(TMP_Dropdown dropdown, int index)
+    private void RefreshDropdown(TMP_Dropdown dropdown, UnityAction<int> callback, int index)
     {
         if (!dropdown) return;
-        isInitializing = true;
+        dropdown.onValueChanged.RemoveListener(callback);
         dropdown.value = index;
         dropdown.RefreshShownValue();
-        isInitializing = false;
+        dropdown.onValueChanged.AddListener(callback);
     }
 
-    private void RefreshSlider(Slider slider, float value)
+    private static void SetSliderValueWithoutNotify(Slider slider, float value, UnityAction<float> callback)
     {
         if (!slider) return;
-        isInitializing = true;
+        slider.onValueChanged.RemoveListener(callback);
         slider.value = value;
-        isInitializing = false;
+        slider.onValueChanged.AddListener(callback);
     }
 
     private static void SetText(TextMeshProUGUI label, string value)
@@ -290,57 +284,74 @@ public class SettingsUI : MonoBehaviour
 
     private void RefreshLanguage()
     {
-        RefreshDropdown(languageDropdown, settingsManager.LanguageIndex);
+        RefreshDropdown(languageDropdown, OnLanguageDropdownChanged, settingsManager.GetParameter<IndexedParameter>("Language").Index);
     }
 
     private void RefreshSensitivity()
     {
-        RefreshSlider(sensitivity.slider, settingsManager.Sensitivity);
-        SetText(sensitivity.valueText, settingsManager.Sensitivity.ToString("F2"));
+        var param = settingsManager.GetParameter<SettingsParameter<float>>("Sensitivity");
+        float val = param.Value;
+        float clamped = Mathf.Clamp(val, sensitivity.slider.minValue, sensitivity.slider.maxValue);
+        if (clamped != val)
+        {
+            param.OnChanged -= RefreshSensitivity;
+            param.Set(clamped);
+            param.OnChanged += RefreshSensitivity;
+            val = clamped;
+        }
+        SetSliderValueWithoutNotify(sensitivity.slider, val, OnSensitivitySliderChanged);
+        SetText(sensitivity.valueText, val.ToString("F2"));
     }
 
     private void RefreshMasterVolume()
     {
-        RefreshSlider(masterVolume.slider, settingsManager.MasterVolume);
-        SetText(masterVolume.valueText, ToPercent(settingsManager.MasterVolume));
+        float val = settingsManager.GetParameter<SettingsParameter<float>>("MasterVolume").Value;
+        SetSliderValueWithoutNotify(masterVolume.slider, val, OnMasterVolumeSliderChanged);
+        SetText(masterVolume.valueText, ToPercent(val));
     }
 
     private void RefreshMusicVolume()
     {
-        RefreshSlider(musicVolume.slider, settingsManager.MusicVolume);
-        SetText(musicVolume.valueText, ToPercent(settingsManager.MusicVolume));
+        float val = settingsManager.GetParameter<SettingsParameter<float>>("MusicVolume").Value;
+        SetSliderValueWithoutNotify(musicVolume.slider, val, OnMusicVolumeSliderChanged);
+        SetText(musicVolume.valueText, ToPercent(val));
     }
 
     private void RefreshSFXVolume()
     {
-        RefreshSlider(sfxVolume.slider, settingsManager.SFXVolume);
-        SetText(sfxVolume.valueText, ToPercent(settingsManager.SFXVolume));
+        float val = settingsManager.GetParameter<SettingsParameter<float>>("SFXVolume").Value;
+        SetSliderValueWithoutNotify(sfxVolume.slider, val, OnSFXVolumeSliderChanged);
+        SetText(sfxVolume.valueText, ToPercent(val));
     }
 
     private void RefreshUIVolume()
     {
-        RefreshSlider(uiVolume.slider, settingsManager.UIVolume);
-        SetText(uiVolume.valueText, ToPercent(settingsManager.UIVolume));
+        float val = settingsManager.GetParameter<SettingsParameter<float>>("UIVolume").Value;
+        SetSliderValueWithoutNotify(uiVolume.slider, val, OnUIVolumeSliderChanged);
+        SetText(uiVolume.valueText, ToPercent(val));
     }
 
     private void RefreshScreenResolution()
     {
-        RefreshDropdown(screenResolutionDropdown, settingsManager.ScreenResolutionIndex);
+        RefreshDropdown(screenResolutionDropdown, OnScreenResolutionDropdownChanged, settingsManager.GetParameter<IndexedParameter>("ScreenResolution").Index);
     }
 
     private void RefreshScreenMode()
     {
-        RefreshDropdown(screenModeDropdown, settingsManager.ScreenModeIndex);
+        RefreshDropdown(screenModeDropdown, OnScreenModeDropdownChanged, settingsManager.GetParameter<IndexedParameter>("ScreenMode").Index);
     }
 
     private void RefreshFpsLimit()
     {
-        RefreshSlider(fpsLimit.slider, settingsManager.FpsStepIndex);
-        SetText(fpsLimit.valueText, ((int)settingsManager.FpsLimit).ToString());
+        var fpsStepParam = settingsManager.GetParameter<SettingsParameter<int>>("FpsStepIndex");
+        SetSliderValueWithoutNotify(fpsLimit.slider, fpsStepParam.Value, OnFpsLimitSliderChanged);
+        float fpsVal = settingsManager.GetParametersValue<float>("FpsStepIndex");
+        SetText(fpsLimit.valueText, ((int)fpsVal).ToString());
     }
 
     private void RefreshVSync()
     {
-        SetText(vSync.valueText, settingsManager.VSync == 1 ? "On" : "Off");
+        int val = settingsManager.GetParameter<SettingsParameter<int>>("VSync").Value;
+        SetText(vSync.valueText, val == 1 ? "On" : "Off");
     }
 }

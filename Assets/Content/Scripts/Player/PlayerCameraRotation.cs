@@ -30,13 +30,13 @@ public class PlayerCameraRotation : MonoBehaviour
             inputState.AddLock(InputState.LockType.Cursor, "InitPlayer");
 
         if (settingsManager != null)
-            settingsManager.GetParameter<SettingsParameter<float>>("Sensitivity").OnChanged += ChangeSensitivityValue;
+            settingsManager.OnParametersChanged += ChangeSensitivityValue;
     }
 
     private void OnDisable()
     {
         if (settingsManager != null)
-            settingsManager.GetParameter<SettingsParameter<float>>("Sensitivity").OnChanged -= ChangeSensitivityValue;
+            settingsManager.OnParametersChanged -= ChangeSensitivityValue;
     }
 
     private void Update() 

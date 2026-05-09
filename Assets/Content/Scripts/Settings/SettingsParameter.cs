@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class SettingsParameter<T>
@@ -26,7 +27,7 @@ public class SettingsParameter<T>
     public bool Set(T newValue, bool silent = false)
     {
         T validated = Validate(newValue);
-        if (Equals(Value, validated)) return false;
+        if (EqualityComparer<T>.Default.Equals(Value, validated) && !silent) return false;
         Value = validated;
         _onApply?.Invoke(Value);
         if (!silent) OnChanged?.Invoke();

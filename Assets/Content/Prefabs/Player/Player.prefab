@@ -282,7 +282,7 @@ MonoBehaviour:
   bodyTransform: {fileID: 8176546017204104651}
   playerCamera: {fileID: 5657697543803232428}
   maxAngleY: 90
-  smoothTime: 0.05
+  smoothTime: 0.02
 --- !u!143 &4195926602642421329
 CharacterController:
   m_ObjectHideFlags: 0
