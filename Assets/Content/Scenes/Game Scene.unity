@@ -12857,14 +12857,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8996130853556778610, guid: 65c501008160bcc43b9edbebbeb6b6c9, type: 3}
-      propertyPath: crouchHeight
-      value: 0.8
-      objectReference: {fileID: 0}
-    - target: {fileID: 8996130853556778610, guid: 65c501008160bcc43b9edbebbeb6b6c9, type: 3}
-      propertyPath: crouchTransitionSpeed
-      value: 15
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -14332,6 +14324,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03fbe57004a088944a8d0ea3994f3cb5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InputState
+  _lockEntries: []
 --- !u!4 &2060998674
 Transform:
   m_ObjectHideFlags: 0

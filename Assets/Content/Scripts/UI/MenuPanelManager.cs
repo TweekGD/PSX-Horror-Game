@@ -67,6 +67,8 @@ public class MenuPanelManager : MonoBehaviour
 
     public void OpenMenu()
     {
+        if (inputState.GetLockState(InputState.LockType.Menu)) { return; }
+
         MenuIsOpen = true;
 
         hudObject?.SetActive(false);

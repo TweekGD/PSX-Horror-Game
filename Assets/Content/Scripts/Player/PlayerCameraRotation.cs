@@ -7,7 +7,7 @@ public class PlayerCameraRotation : MonoBehaviour
     [SerializeField] private Camera playerCamera;
     [SerializeField] private float maxAngleY = 90f;
     [SerializeField] private float smoothTime = 0.05f;
-    public static Camera PlayerCamera { get; private set; }
+    public Camera PlayerCamera { get; private set; }
 
     private Vector2 cameraRotation;
     private Vector2 currentInput;
@@ -18,44 +18,56 @@ public class PlayerCameraRotation : MonoBehaviour
     private ISettingsManager settingsManager;
     private IInputState inputState;
 
+    private float cameraSensitivity = 1f;
+
     private void Awake()
     {
         inputManager = ServiceLocator.Get<IInputManager>();
         settingsManager = ServiceLocator.Get<ISettingsManager>();
         inputState = ServiceLocator.Get<IInputState>();
 
-        inputState?.AddLock(InputState.LockType.Cursor, "InitPlayer");
+        PlayerCamera = playerCamera;
+
+        if (inputState != null)
+            inputState.AddLock(InputState.LockType.Cursor, "InitPlayer");
+
+        if (settingsManager != null)
+            settingsManager.GetParameter<SettingsParameter<float>>("Sensitivity").OnChanged += ChangeSensitivityValue;
     }
 
-    private void Update()
+    private void OnDisable()
     {
-        CameraRotation();
+        if (settingsManager != null)
+            settingsManager.GetParameter<SettingsParameter<float>>("Sensitivity").OnChanged -= ChangeSensitivityValue;
     }
+
+    private void Update() 
+        => CameraRotation();
+
+    private void ChangeSensitivityValue() 
+        => cameraSensitivity = settingsManager.GetParametersValue<float>("Sensitivity");
 
     private void CameraRotation()
     {
-        if (inputManager == null) { return; }
+        if (inputManager == null || inputState == null) { return; }
 
-        float sensitivityValue = settingsManager != null ? settingsManager.GetParametersValue<float>("Sensitivity") : 1f;
+        bool cursorLocked = inputState.GetLockState(InputState.LockType.Cursor);
+        bool cameraLocked = inputState.GetLockState(InputState.LockType.Camera);
 
-        if (inputState != null)
-        {
-            Cursor.lockState = inputState.GetLockState(InputState.LockType.Cursor) ? CursorLockMode.Locked : CursorLockMode.None;
-            Cursor.visible = !inputState.GetLockState(InputState.LockType.Cursor);
-        }
+        Cursor.lockState = cursorLocked ? CursorLockMode.Locked : CursorLockMode.None;
+        Cursor.visible = !cursorLocked;
 
-        if (!inputState.GetLockState(InputState.LockType.Camera))
-        {
-            currentInput = inputManager.GetInput<Vector2>("LookInput") * sensitivityValue;
+        if (cameraLocked) { return; }
 
-            smoothedInput.x = Mathf.SmoothDamp(smoothedInput.x, currentInput.x, ref inputVelocity.x, smoothTime);
-            smoothedInput.y = Mathf.SmoothDamp(smoothedInput.y, currentInput.y, ref inputVelocity.y, smoothTime);
+        currentInput = inputManager.GetInput<Vector2>("LookInput") * cameraSensitivity;
 
-            cameraRotation.x += smoothedInput.x;
-            cameraRotation.y += smoothedInput.y;
+        smoothedInput.x = Mathf.SmoothDamp(smoothedInput.x, currentInput.x, ref inputVelocity.x, smoothTime);
+        smoothedInput.y = Mathf.SmoothDamp(smoothedInput.y, currentInput.y, ref inputVelocity.y, smoothTime);
 
-            cameraRotation.y = Mathf.Clamp(cameraRotation.y, -maxAngleY, maxAngleY);
-        }
+        cameraRotation.x += smoothedInput.x;
+        cameraRotation.y += smoothedInput.y;
+
+        cameraRotation.y = Mathf.Clamp(cameraRotation.y, -maxAngleY, maxAngleY);
 
         cameraTransform.localRotation = Quaternion.Euler(-cameraRotation.y, 0f, 0f);
         bodyTransform.rotation = Quaternion.Euler(0f, cameraRotation.x, 0f);
