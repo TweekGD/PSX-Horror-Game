@@ -130,7 +130,7 @@ public class SettingsUI : MonoBehaviour
         SetupSlider(musicVolume.slider, 0f, 2f, false);
         SetupSlider(sfxVolume.slider, 0f, 2f, false);
         SetupSlider(uiVolume.slider, 0f, 2f, false);
-        SetupSlider(fpsLimit.slider, 0f, 480, true);
+        SetupSlider(fpsLimit.slider, 0f, settingsManager.FpsStepsCount - 1, true);
     }
 
     private void SetupSlider(Slider slider, float min, float max, bool wholeNumbers)
@@ -176,8 +176,8 @@ public class SettingsUI : MonoBehaviour
 
     private void BindArrows()
     {
-        BindArrow(vSync.leftButton, () => settingsManager.GetParameter<SettingsParameter<int>>("VSync").Set((settingsManager.GetParameter<SettingsParameter<int>>("VSync").Value - 1 + 2) % 2));
-        BindArrow(vSync.rightButton, () => settingsManager.GetParameter<SettingsParameter<int>>("VSync").Set((settingsManager.GetParameter<SettingsParameter<int>>("VSync").Value + 1 + 2) % 2));
+        BindArrow(vSync.leftButton, () => settingsManager.StepVSync(-1));
+        BindArrow(vSync.rightButton, () => settingsManager.StepVSync(1));
     }
 
     private static void BindArrow(Button btn, System.Action action)
@@ -232,16 +232,7 @@ public class SettingsUI : MonoBehaviour
 
     private void OnReset()
     {
-        settingsManager.GetParameter<IndexedParameter>("Language").Reset();
-        settingsManager.GetParameter<SettingsParameter<float>>("Sensitivity").Reset();
-        settingsManager.GetParameter<SettingsParameter<float>>("MasterVolume").Reset();
-        settingsManager.GetParameter<SettingsParameter<float>>("MusicVolume").Reset();
-        settingsManager.GetParameter<SettingsParameter<float>>("SFXVolume").Reset();
-        settingsManager.GetParameter<SettingsParameter<float>>("UIVolume").Reset();
-        settingsManager.GetParameter<IndexedParameter>("ScreenResolution").Reset();
-        settingsManager.GetParameter<IndexedParameter>("ScreenMode").Reset();
-        settingsManager.GetParameter<SettingsParameter<int>>("FpsStepIndex").Reset();
-        settingsManager.GetParameter<SettingsParameter<int>>("VSync").Reset();
+        settingsManager.ResetToDefaults();
     }
 
     private void RefreshAll()
@@ -289,16 +280,7 @@ public class SettingsUI : MonoBehaviour
 
     private void RefreshSensitivity()
     {
-        var param = settingsManager.GetParameter<SettingsParameter<float>>("Sensitivity");
-        float val = param.Value;
-        float clamped = Mathf.Clamp(val, sensitivity.slider.minValue, sensitivity.slider.maxValue);
-        if (clamped != val)
-        {
-            param.OnChanged -= RefreshSensitivity;
-            param.Set(clamped);
-            param.OnChanged += RefreshSensitivity;
-            val = clamped;
-        }
+        float val = settingsManager.GetParameter<SettingsParameter<float>>("Sensitivity").Value;
         SetSliderValueWithoutNotify(sensitivity.slider, val, OnSensitivitySliderChanged);
         SetText(sensitivity.valueText, val.ToString("F2"));
     }
@@ -343,10 +325,9 @@ public class SettingsUI : MonoBehaviour
 
     private void RefreshFpsLimit()
     {
-        var fpsStepParam = settingsManager.GetParameter<SettingsParameter<int>>("FpsStepIndex");
-        SetSliderValueWithoutNotify(fpsLimit.slider, fpsStepParam.Value, OnFpsLimitSliderChanged);
-        float fpsVal = settingsManager.GetParametersValue<float>("FpsStepIndex");
-        SetText(fpsLimit.valueText, ((int)fpsVal).ToString());
+        int stepIndex = settingsManager.FpsStepIndex;
+        SetSliderValueWithoutNotify(fpsLimit.slider, stepIndex, OnFpsLimitSliderChanged);
+        SetText(fpsLimit.valueText, settingsManager.FpsLimit.ToString());
     }
 
     private void RefreshVSync()

@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -28,9 +29,12 @@ public class MenuPanelManager : MonoBehaviour
     [SerializeField] private UIPanel settingsPanel;
 
     private Dictionary<PanelIndex, UIPanel> panels;
+    private CanvasGroup menuCanvasGroup;
 
     private IInputManager inputManager;
     private IInputState inputState;
+
+    private Tween fadeMenuTween;
     public bool MenuIsOpen { get; private set; }
 
     private void Awake()
@@ -38,11 +42,35 @@ public class MenuPanelManager : MonoBehaviour
         inputManager = ServiceLocator.Get<IInputManager>();
         inputState = ServiceLocator.Get<IInputState>();
 
+        menuCanvasGroup = menuContainer.GetComponent<CanvasGroup>();
+
         panels = new Dictionary<PanelIndex, UIPanel>
         {
             { PanelIndex.MenuButtons, menuButtonsPanel },
             { PanelIndex.Settings,    settingsPanel    }
         };
+
+        HideAllOnStart();
+    }
+
+    private void HideAllOnStart()
+    {
+        menuCanvasGroup.alpha = 0f;
+
+        foreach (var pair in panels)
+        {
+            UIPanel panel = pair.Value;
+            if (panel == null || panel.animation == null) continue;
+
+            RectTransform rt = panel.animation.GetComponent<RectTransform>();
+            if (rt != null) rt.anchoredPosition = panel.closePos;
+
+            panel.isActive = false;
+            panel.animation.gameObject.SetActive(false);
+        }
+
+        menuContainer?.SetActive(false);
+        hudObject?.SetActive(true);
     }
 
     private void Update()
@@ -74,6 +102,12 @@ public class MenuPanelManager : MonoBehaviour
         hudObject?.SetActive(false);
         menuContainer?.SetActive(true);
 
+        if (menuCanvasGroup != null)
+        {
+            fadeMenuTween?.Kill();
+            fadeMenuTween = menuCanvasGroup.DOFade(1f, 1f);
+        }
+
         if (inputState != null)
         {
             inputState.AddLock(InputState.LockType.Move, "PausePanel");
@@ -87,6 +121,12 @@ public class MenuPanelManager : MonoBehaviour
     public void CloseMenu()
     {
         CloseMenuPanels();
+
+        if (menuCanvasGroup != null)
+        {
+            fadeMenuTween?.Kill();
+            fadeMenuTween = menuCanvasGroup.DOFade(0f, 1f);
+        }
 
         SetPanelActive(PanelIndex.MenuButtons, false, onComplete: () =>
         {
@@ -125,7 +165,6 @@ public class MenuPanelManager : MonoBehaviour
         Vector2 target = isOpen ? panel.openPos : panel.closePos;
         float delay = isOpen ? panel.delay : 0f;
 
-
         if (isOpen)
         {
             panel.animation.gameObject.SetActive(true);
@@ -136,7 +175,6 @@ public class MenuPanelManager : MonoBehaviour
             panel.animation.StartAnimationElement(target, panel.duration, delay,
                 deactivateOnComplete: true, onComplete: onComplete);
         }
-
     }
 
     private bool HasPanel(PanelIndex index) =>
@@ -151,4 +189,7 @@ public class MenuPanelManager : MonoBehaviour
     }
 
     public void GameQuit() { Application.Quit(); }
+
+    private void OnDestroy() { fadeMenuTween?.Kill(); }
+    private void OnDisable() { fadeMenuTween?.Kill(); }
 }

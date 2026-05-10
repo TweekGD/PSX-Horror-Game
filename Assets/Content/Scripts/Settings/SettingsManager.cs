@@ -90,13 +90,16 @@ public class SettingsManager : MonoBehaviour, ISettingsManager, IAsyncInitializa
     {
         string[] resLabels = BuildResolutionLabels();
 
+        int defaultResIndex = Array.FindIndex(resLabels, r => r == "1920x1080");
+        if (defaultResIndex < 0) defaultResIndex = resLabels.Length - 1;
+
         _language = new IndexedParameter("Language", LanguageOptions);
-        _sensitivity = new SettingsParameter<float>("Sensitivity", 1f, v => Mathf.Clamp(v, 0.05f, 1f));
+        _sensitivity = new SettingsParameter<float>("Sensitivity", 0.5f, v => Mathf.Clamp(v, 0.05f, 1f));
         _masterVolume = new SettingsParameter<float>("MasterVolume", 1f, v => Mathf.Clamp(v, 0f, 2f), v => AudioListener.volume = v);
         _musicVolume = new SettingsParameter<float>("MusicVolume", 1f, v => Mathf.Clamp(v, 0f, 2f));
         _sfxVolume = new SettingsParameter<float>("SFXVolume", 1f, v => Mathf.Clamp(v, 0f, 2f));
         _uiVolume = new SettingsParameter<float>("UIVolume", 1f, v => Mathf.Clamp(v, 0f, 2f));
-        _screenResolution = new IndexedParameter("ScreenResolution", resLabels, resLabels.Length - 1, _ => ApplyScreenSettings());
+        _screenResolution = new IndexedParameter("ScreenResolution", resLabels, defaultResIndex, _ => ApplyScreenSettings());
         _screenMode = new IndexedParameter("ScreenMode", ScreenModeOptions, 0, _ => ApplyScreenSettings());
         _fpsStepIndex = new SettingsParameter<int>("FpsStepIndex", GetClosestFpsIndex(120), v => Mathf.Clamp(v, 0, FpsSteps.Length - 1), v => Application.targetFrameRate = FpsSteps[v]);
         _vSync = new SettingsParameter<int>("VSync", 0, v => Mathf.Clamp(v, 0, 1), v => QualitySettings.vSyncCount = v);

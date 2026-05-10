@@ -12,11 +12,7 @@ public class SmoothAnimationUI : MonoBehaviour
         uiElement = GetComponent<RectTransform>();
     }
 
-
-    public void StartAnimationElement(Vector2 targetPos, float duration,
-                                        float delay = 0f,
-                                        bool deactivateOnComplete = false,
-                                        Action onComplete = null)
+    public void StartAnimationElement(Vector2 targetPos, float duration, float delay = 0f, bool deactivateOnComplete = false, Action onComplete = null)
     {
         elementTween?.Kill();
 
@@ -31,7 +27,6 @@ public class SmoothAnimationUI : MonoBehaviour
                 onComplete?.Invoke();
             });
     }
-
 
     private void OnDestroy() { elementTween?.Kill(); }
     private void OnDisable() { elementTween?.Kill(); }

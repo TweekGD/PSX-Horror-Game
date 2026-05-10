@@ -31,6 +31,8 @@ public class PlayerCameraRotation : MonoBehaviour
 
         if (settingsManager != null)
             settingsManager.OnParametersChanged += ChangeSensitivityValue;
+
+        ChangeSensitivityValue();
     }
 
     private void OnDisable()
