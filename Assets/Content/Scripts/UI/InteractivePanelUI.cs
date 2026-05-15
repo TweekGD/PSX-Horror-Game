@@ -1,20 +1,47 @@
-//using UnityEngine;
+using UnityEngine;
+public class InteractivePanelUI : MonoBehaviour
+{
+    [SerializeField] private Camera playerCamera;
+    [SerializeField] private PlayerInteract playerInteract;
+    [SerializeField] private RectTransform panel;
+    [SerializeField] private Canvas canvas;
 
-//public class InteractivePanelUI : MonoBehaviour
-//{
-//    [SerializeField] private PlayerInteract playerInteract;
-//    [SerializeField] private float fadeSpeed = 1f;
-//    [SerializeField] private CanvasGroup canvasGroup;
-//    public bool InteractivePanelIsActive { get; private set; }
+    private void OnEnable()
+    {
+        playerInteract.OnInteracted += OnInteractedChanged;
+    }
 
-//    private void Update()
-//    {
-//        ToggleInteractivePanel(playerInteract.OnInteractebleCollider);
-//    }
-//    public void ToggleInteractivePanel(bool active)
-//    {
-//        InteractivePanelIsActive = active;
+    private void OnDisable()
+    {
+        playerInteract.OnInteracted -= OnInteractedChanged;
+    }
 
-//        canvasGroup.alpha += InteractivePanelIsActive ? Time.deltaTime * fadeSpeed : -Time.deltaTime * fadeSpeed;
-//    }
-//}
+    private void OnInteractedChanged(bool isActive)
+    {
+        panel.gameObject.SetActive(isActive);
+    }
+
+    private void LateUpdate()
+    {
+        if (playerInteract.LastTarget == null) return;
+
+        MonoBehaviour targetBehaviour = playerInteract.LastTarget as MonoBehaviour;
+
+        if (targetBehaviour == null) return;
+
+        Vector3 screenPoint = playerCamera.WorldToScreenPoint(targetBehaviour.transform.position);
+
+        if (screenPoint.z < 0f) return;
+
+        Camera uiCamera = canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : playerCamera;
+
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            canvas.GetComponent<RectTransform>(),
+            new Vector2(screenPoint.x, screenPoint.y),
+            uiCamera,
+            out Vector2 localPoint
+        );
+
+        panel.anchoredPosition = localPoint;
+    }
+}

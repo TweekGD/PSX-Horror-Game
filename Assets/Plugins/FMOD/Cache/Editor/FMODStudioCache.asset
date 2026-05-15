@@ -27,6 +27,33 @@ MonoBehaviour:
   MinDistance: 0
   MaxDistance: 0
   Length: 0
+--- !u!114 &-8457220675001058727
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/UI/Click
+  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
+  Path: event:/UI/Click
+  Guid:
+    Data1: -688943277
+    Data2: 1312745436
+    Data3: -2025267803
+    Data4: 297263117
+  Banks:
+  - {fileID: 7932228850575074646}
+  IsStream: 0
+  Is3D: 0
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 0
 --- !u!114 &-8172481163565803105
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -42,11 +69,119 @@ MonoBehaviour:
   Path: Assets/Content/Audio/AudioProject/Build/Desktop/Master.bank
   Name: Master
   StudioPath: bank:/Master
-  lastModified: 639138715222351122
+  lastModified: 639141059672023775
   FileSizes:
   - Name: Desktop
-    Value: 4706
+    Value: 4314
   Exists: 1
+--- !u!114 &-4828297706664567677
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/Player/Footsteps/Grass/Grass Footstep
+  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
+  Path: event:/Player/Footsteps/Grass/Grass Footstep
+  Guid:
+    Data1: 1405224487
+    Data2: 1260089625
+    Data3: 81400245
+    Data4: -460412744
+  Banks:
+  - {fileID: 1444821697765373778}
+  IsStream: 0
+  Is3D: 1
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 0.5
+  MaxDistance: 8
+  Length: 630
+--- !u!114 &-4111129272186106418
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/Player/Footsteps/Concrete/Concrete Footstep
+  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
+  Path: event:/Player/Footsteps/Concrete/Concrete Footstep
+  Guid:
+    Data1: 1715337401
+    Data2: 1193890975
+    Data3: 1706895036
+    Data4: 1872976216
+  Banks:
+  - {fileID: 1444821697765373778}
+  IsStream: 0
+  Is3D: 1
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 0.5
+  MaxDistance: 8
+  Length: 630
+--- !u!114 &-3587566028555329454
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/Player/Footsteps/Wood/Wood Footstep
+  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
+  Path: event:/Player/Footsteps/Wood/Wood Footstep
+  Guid:
+    Data1: 1693698372
+    Data2: 1150375963
+    Data3: 313486738
+    Data4: -1928954596
+  Banks:
+  - {fileID: 1444821697765373778}
+  IsStream: 0
+  Is3D: 1
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 0.5
+  MaxDistance: 8
+  Length: 630
+--- !u!114 &-892330546108050482
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/Player/Footsteps/Metal/Metal Footstep
+  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
+  Path: event:/Player/Footsteps/Metal/Metal Footstep
+  Guid:
+    Data1: -923427081
+    Data2: 1162691927
+    Data3: -1122900602
+    Data4: -1834599286
+  Banks:
+  - {fileID: 1444821697765373778}
+  IsStream: 0
+  Is3D: 1
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 0.5
+  MaxDistance: 8
+  Length: 690
 --- !u!114 &-287172199787151474
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -62,10 +197,10 @@ MonoBehaviour:
   Path: Assets/Content/Audio/AudioProject/Build/Desktop/Master.strings.bank
   Name: Master.strings
   StudioPath: bank:/Master.strings
-  lastModified: 639138715222371110
+  lastModified: 639141059672043765
   FileSizes:
   - Name: Desktop
-    Value: 1004
+    Value: 1298
   Exists: 1
 --- !u!114 &11400000
 MonoBehaviour:
@@ -87,16 +222,31 @@ MonoBehaviour:
   - {fileID: 7932228850575074646}
   EditorEvents:
   - {fileID: -8515847443996845297}
+  - {fileID: -4828297706664567677}
+  - {fileID: -3587566028555329454}
+  - {fileID: -4111129272186106418}
+  - {fileID: -892330546108050482}
+  - {fileID: -8457220675001058727}
   EditorParameters: []
   MasterBanks:
   - {fileID: -8172481163565803105}
   StringsBanks:
   - {fileID: -287172199787151474}
   cacheVersion: 131859
-  cacheTime: 639138715222550995
+  cacheTime: 639141059672383925
   SerializableEventsDict:
   - key: snapshot:/Low Reverb
     index: 0
+  - key: event:/Player/Footsteps/Grass/Grass Footstep
+    index: 1
+  - key: event:/Player/Footsteps/Wood/Wood Footstep
+    index: 2
+  - key: event:/Player/Footsteps/Concrete/Concrete Footstep
+    index: 3
+  - key: event:/Player/Footsteps/Metal/Metal Footstep
+    index: 4
+  - key: event:/UI/Click
+    index: 5
 --- !u!114 &1444821697765373778
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -112,10 +262,10 @@ MonoBehaviour:
   Path: Assets/Content/Audio/AudioProject/Build/Desktop/SFX.bank
   Name: SFX
   StudioPath: bank:/SFX
-  lastModified: 639138715222451066
+  lastModified: 639141047563914308
   FileSizes:
   - Name: Desktop
-    Value: 506
+    Value: 138624
   Exists: 1
 --- !u!114 &7532805470383996065
 MonoBehaviour:
@@ -152,8 +302,8 @@ MonoBehaviour:
   Path: Assets/Content/Audio/AudioProject/Build/Desktop/UI.bank
   Name: UI
   StudioPath: bank:/UI
-  lastModified: 639138715222550995
+  lastModified: 639141059672383925
   FileSizes:
   - Name: Desktop
-    Value: 506
+    Value: 2848
   Exists: 1
